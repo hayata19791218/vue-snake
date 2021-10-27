@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,30 +8,55 @@
         <title>Vueで作ったスネークゲーム</title>
     </head>
     <body>
-    <div id="app">   
-        <div class="wrap">
-            <div 
-                class="field"
-                v-for="field in fields"
-            >
-{{field}}
+        <div id="app">   
+            <div class="wrap">
+                <div 
+                    class="field"
+                    v-for="field in fields"
+                    :class="{background:snakeHead == field-1}"
+                >{{field}}</div>
             </div>
         </div>
-    </div>
         <script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.min.js"></script>
         <script>
             var app = new Vue({
                 el: '#app',
                 data:{
-                   width:10
+                    width:10,
+                    headPosition:{
+                        x:1,y:3
+                    },
+                    speed:400,
+                    direction:'→'
                 },
                 methods:{
-                   
+                    timer(){
+                        this.forwardSnake();
+                        setTimeout(this.timer,this.speed);
+                    },
+                    forwardSnake(){
+                        switch(this.direction){
+                            case '→':this.headPosition.x ++;
+                            break;
+                            case '←':this.headPosition.x --;
+                            break;
+                            case '↑':this.headPosition.y --;
+                            break;
+                            case '↓':this.headPosition.y ++;
+                            break;
+                        }
+                    }
                 },
                 computed:{
-                   fields(){
-                       return this.width * this.width;
-                   }
+                    fields(){
+                        return this.width * this.width;
+                    },
+                    snakeHead(){
+                        return this.width * this.headPosition.x + this.headPosition.y;
+                    }
+                },
+                created(){
+                    this.timer();
                 }
             })
         </script>
@@ -49,6 +74,9 @@
                 height: 50px;
                 background-color:skyblue;
                 border:1px solid #fff;
+            }
+            .background{
+                background-color:pink;
             }
         </style>
     </body>
