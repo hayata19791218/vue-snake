@@ -9,16 +9,25 @@
     </head>
     <body>
         <div id="app">   
+            <p>ヘビが食べたフルーツの数は{{score - 2}}個</p>
             <div class="wrap">
                 <div 
                     class="field-background"
                     v-for="field in fields"
-                    :class="{background:snakeHead == field-1}"
+                    :class="{
+                        background:snakeHead == field - 1,
+                        addBody:snakeBody.includes(field - 1),
+                        fruit:fruitPosition == field - 1
+                    }"
                 >{{field-1}}</div>
             </div>
             {{headPosition.x}}
             {{headPosition.y}}
             {{snakeHead}}
+            {{snakeBody}}
+            {{speed}}
+            {{snakeBody.length}}
+            {{snakeLength}}
         </div>
         <script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.min.js"></script>
         <script>
@@ -31,37 +40,101 @@
                         y:3
                     },
                     speed:1000,
-                    direction:'→'
+                    direction:'→',
+                    snakeLength:2,
+                    snakeBody:[],
+                    fruitPosition:0,
+           
                 },
                 methods:{
                     timer(){
+                        if(this.gameOver){
+                            return;
+                        }
                         this.forwardSnake();
                         setTimeout(this.timer,this.speed);
+                        if(this.snakeBody.length == 5){
+                            this.speed = 700;
+                        }
                     },
                     forwardSnake(){
-                        switch(this.direction){
-                            case '→':this.headPosition.x ++;break
-                            // case '←':this.headPosition.x --;break
-                            // case '↑':this.headPosition.y --;break
-                            // case '↓':this.headPosition.y ++;break
+                        // if文の後にswitch文を書かないと挙動が変になる
+                        if(this.snakeBody.length < this.snakeLength){
+                            this.snakeBody.push(this.snakeHead);
                         }
+                        if(this.snakeBody.length >= this.snakeLength){
+                            this.snakeBody.shift();
+                        }
+                        switch(this.direction){
+                            case '→':this.headPosition.x ++;
+                            break;
+                            case '←':this.headPosition.x --;
+                            break;
+                            case '↑':this.headPosition.y --;
+                            break;
+                            case '↓':this.headPosition.y ++;
+                            break;
+                        }
+                        //その解説はここまで
+                        
+                        
+                    },
+                    keydown(e){
+                        switch(e.key){
+                            case 'ArrowUp': this.direction = '↑';
+                            break;
+                            case 'ArrowRight': this.direction = '→';
+                            break;
+                            case 'ArrowLeft': this.direction = '←';
+                            break;
+                            case 'ArrowDown': this.direction = '↓';
+                            break;
+                        }
+                    },
+                    randomFruit(){
+                        this.fruitPosition = Math.floor(Math.random()*this.fields);
                     }
+                    
                 },
                 computed:{
                     fields(){
                         return this.width * this.width;
                     },
                     snakeHead(){
-                        return this.width * this.headPosition.y + this.headPosition.x;
-
+                        if(this.frameOut){
+                            return;
+                        }
+                        return this.headPosition.y * this.width  + this.headPosition.x;
+                        // return  this.headPosition.y + this.headPosition.x * this.width;
                         //  ここの決め方（特にwidth）でxとyの動き方が決まる
-
-
-
+                        //  43行目でthis.headPosition.xが1だと55行目のthis.headPosition.x*this.widthが10になるから縦に動く
+                    },
+                    score(){
+                        return this.snakeLength;
+                    },
+                    frameOut(){
+                        const {x,y} = this.snakeHead;
+                        return x < 0 || this.fields <= x || y < 0 || this.fields <= y;
+                    },
+                    collided(){
+                        return this.snakeBody.includes(this.snakeHead);
+                    },
+                    gameOver(){
+                        return this.collided || this.frameOut;
                     }
                 },
                 created(){
                     this.timer();
+                    document.addEventListener('keydown',this.keydown);
+                    this.randomFruit();
+                },
+                watch:{
+                    snakeHead(food){
+                        if(food == this.fruitPosition){
+                            this.snakeLength ++;
+                            this.randomFruit();
+                        }
+                    }
                 }
             })
         </script>
@@ -82,6 +155,12 @@
             }
             .background{
                 background-color:pink;
+            }
+            .addBody{
+                background-color:black;
+            }
+            .fruit{
+                background-color:orangered;
             }
         </style>
     </body>
