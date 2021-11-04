@@ -28,6 +28,9 @@
             {{speed}}
             {{snakeBody.length}}
             {{snakeLength}}
+            <p>frameout:{{frameOut}}</p>
+            <p>{{collided}}</p>
+
         </div>
         <script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.min.js"></script>
         <script>
@@ -113,8 +116,8 @@
                         return this.snakeLength;
                     },
                     frameOut(){
-                        const {x,y} = this.snakeHead;
-                        return x < 0 || this.fields <= x || y < 0 || this.fields <= y;
+                        const {x,y} = this.headPosition;
+                        return x < 0 || this.width <= x || y < 0 || this.width <= y;
                     },
                     collided(){
                         return this.snakeBody.includes(this.snakeHead);
