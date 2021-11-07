@@ -21,7 +21,12 @@
                     }"
                 >{{field-1}}</div>
             </div>
-            {{headPosition.x}}
+            <p 
+                class="gameover"
+                v-if="gameOver"
+            >GAME OVER</p>
+
+            <!-- {{headPosition.x}}
             {{headPosition.y}}
             {{snakeHead}}
             {{snakeBody}}
@@ -29,7 +34,7 @@
             {{snakeBody.length}}
             {{snakeLength}}
             <p>frameout:{{frameOut}}</p>
-            <p>{{collided}}</p>
+            <p>{{collided}}</p> -->
 
         </div>
         <script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.min.js"></script>
@@ -47,6 +52,7 @@
                     snakeLength:2,
                     snakeBody:[],
                     fruitPosition:0,
+                    gameState:true
            
                 },
                 methods:{
@@ -124,6 +130,7 @@
                     },
                     gameOver(){
                         return this.collided || this.frameOut;
+                        gameState:false;
                     }
                 },
                 created(){
@@ -157,13 +164,17 @@
                 border:1px solid #fff;
             }
             .background{
-                background-color:pink;
+                background-color:gold;
             }
             .addBody{
                 background-color:black;
             }
             .fruit{
-                background-color:orangered;
+                background-color:pink;
+            }
+            .gameover{
+                font-size: 30px;
+                font-weight: bold;
             }
         </style>
     </body>
